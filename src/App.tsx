@@ -1,74 +1,11 @@
-import { useState, useEffect, SetStateAction } from 'react';
-import { User } from './types/User';
 
-const apiUrl = 'https://dummyjson.com/users';
+import { useUserContext } from './context/UserContext';
+
 
 function App() {
-	const [users, setUsers] = useState<User[]>([]);
-	const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-	const [nameFilter, setNameFilter] = useState('');
-	const [cityFilter, setCityFilter] = useState('');
-	const [highlightFeature, setHighlightFeature] = useState(false);
-	const [debounceTimeout, setDebounceTimeout] = useState<NodeJS.Timeout | null>(null);
 
-	useEffect(() => {
-		fetch(apiUrl)
-			.then(response => response.json())
-			.then(data => {
-				setUsers(data.users);
-				console.log(data.users);
-				setFilteredUsers(data.users);
-			});
-	}, []);
-
-	const handleNameFilterChange = (event: { target: { value: string; }; }) => {
-		const { value } = event.target;
-		setNameFilter(value);
-		setCityFilter('');
-		if (debounceTimeout) {
-			clearTimeout(debounceTimeout);
-		}
-		setDebounceTimeout(
-			setTimeout(() => {
-				const filteredUsers = users.filter((user) =>
-					user.firstName.toLowerCase().includes(value.toLowerCase()) ||
-					user.lastName.toLowerCase().includes(value.toLowerCase())
-				);
-				setFilteredUsers(filteredUsers);
-			}, 100)
-		);
-	};
-
-	const handleCityFilterChange = (event: { target: { value: SetStateAction<string>; }; }) => {
-		setCityFilter(event.target.value);
-		setNameFilter('');
-		const filteredUsers = users.filter((user) => user.address.city === event.target.value);
-		setFilteredUsers(filteredUsers);
-	};
-
-	const handleHighlightFeatureChange = (event: { target: { checked: boolean | ((prevState: boolean) => boolean); }; }) => {
-		setHighlightFeature(event.target.checked);
-	};
-
-	const getOldestUsersByCity = () => {
-		const oldestUsersByCity: { [key: string]: User } = {};
-
-		users.forEach((user) => {
-			const userCity = user.address.city;
-			if (!oldestUsersByCity[userCity] || user.age > oldestUsersByCity[userCity].age) {
-				oldestUsersByCity[userCity] = user;
-			}
-		});
-
-		return oldestUsersByCity;
-	};
-
-	const oldestUsersByCity = highlightFeature ? getOldestUsersByCity() : {};
-
-	if (users.length === 0) {
-		return <div>Loading...</div>;
-	}
-
+	const { users, filteredUsers, nameFilter, cityFilter, highlightFeature, oldestUsersByCity, handleNameFilterChange, handleCityFilterChange, handleHighlightFeatureChange } = useUserContext();
+	if (!users) return <div>Loading...</div>;
 	return (
 		<div className='w-screen'>
 			<div className='flex flex-row w-3/4 m-10 gap-5 justify-start'>
