@@ -4,7 +4,7 @@ import { UserContext } from "../context/UserContext";
 function SearchArea() {
 	const { nameFilter, cityFilter, highlightFeature, users, handleCityFilterChange, handleNameFilterChange, handleHighlightFeatureChange } = useContext(UserContext);
 	return (
-		<div className='flex flex-row w-3/4 m-10 gap-10 justify-start items-center'>
+		<div className='flex flex-row w-3/4 m-10 gap-10 justify-start items-center '>
 			<div className="flex flex-col">
 				<label htmlFor="nameFilter" className="font-bold">Name:</label>
 				<input
